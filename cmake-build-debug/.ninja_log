@@ -1,0 +1,14 @@
+# ninja log v6
+18	319	7596902937321575	CMakeFiles/Supermarket.dir/Date.c.obj	e7310eee437c8bd7
+79	336	7596902937930041	CMakeFiles/Supermarket.dir/GeneralList.c.obj	6aefd4fcb5b69732
+40	324	7596902937541206	CMakeFiles/Supermarket.dir/FileHelper.c.obj	1dd0c1757a8fc9e1
+53	347	7596902937662332	CMakeFiles/Supermarket.dir/General.c.obj	e5f47cb48e75a878
+104	383	7596902938183548	CMakeFiles/Supermarket.dir/Product.c.obj	ed65aa03a4cae393
+162	402	7596902938766202	CMakeFiles/Supermarket.dir/ShoppingItem.c.obj	381b7fc9cdaa8aa9
+133	390	7596902938468383	CMakeFiles/Supermarket.dir/ShoppingCart.c.obj	2fe5b6271b0d66a2
+3	183	7596903486820046	CMakeFiles/Supermarket.dir/main.c.obj	4fca7c1c78868537
+16	203	7596903486954631	CMakeFiles/Supermarket.dir/SuperFile.c.obj	9cfbb195949754c3
+53	229	7596903487328568	CMakeFiles/Supermarket.dir/Customer.c.obj	d871c0897fdd98ff
+65	252	7596903487441743	CMakeFiles/Supermarket.dir/ClubMember.c.obj	f4bf0ed326fea1af
+34	257	7596903487130791	CMakeFiles/Supermarket.dir/Supermarket.c.obj	d78e3fc75ec96590
+257	420	7596903489356533	Supermarket.exe	41b7bd9a1d9f6619
