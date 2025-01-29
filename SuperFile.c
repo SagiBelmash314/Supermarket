@@ -46,8 +46,38 @@ int	saveSuperMarketToFile(const SuperMarket* pMarket, const char* fileName,
 	return 1;
 }
 
-int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName,
-	const char* customersFileName)
+int	saveSuperMarketToCompressedFile(SuperMarket* pMarket, const char* fileName, const char* customersFileName)
+{
+    FILE* fp;
+    fp = fopen(fileName, "wb");
+    if (!fp) {
+        printf("Error open supermarket file to write\n");
+        return 0;
+    }
+
+    int len = strlen(pMarket->name);
+    BYTE data[2] = { 0 };
+    data[0] = pMarket->productCount >> 2;
+    data[1] = pMarket->productCount << 6 | len;
+    if (fwrite(data, sizeof(BYTE), 2, fp) != 2 ||
+        fwrite(pMarket->name, sizeof(char), len, fp) != len) {
+        printf("Error write supermarket\n");
+        fclose(fp);
+        return 0;
+    }
+
+    for (int i = 0; i < pMarket->productCount; i++)
+        if (!writeProductToCompressedFile(pMarket->productArr[i], fp, "Error write product\n"))
+        {
+            fclose(fp);
+            return 0;
+        }
+
+    fclose(fp);
+    return 1;
+}
+
+int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName, const char* customersFileName)
 {
 	FILE* fp;
 	fp = fopen(fileName, "rb");
@@ -57,7 +87,9 @@ int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName,
 		return 0;
 	}
 
-	pMarket->name = readStringFromFile(fp, "Error reading supermarket name\n");
+
+
+	else pMarket->name = readStringFromFile(fp, "Error reading supermarket name\n");
 	if (!pMarket->name)
 	{
 		fclose(fp);
@@ -111,6 +143,39 @@ int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName,
 
 	return	1;
 
+}
+
+int	loadSuperMarketFromCompressedFile(SuperMarket* pMarket, const char* fileName, const char* customersFileName)
+{
+    FILE* fp;
+    fp = fopen(fileName, "rb");
+    if (!fp)
+    {
+        printf("Error open company file\n");
+        return 0;
+    }
+
+    BYTE data[2] = { 0 };
+
+    if (fread(data, 1, 2, fp) != 2)
+    {
+        printf("Error reading supermarket");
+        fclose(fp);
+        return 0;
+    }
+
+    if (!initSupermarketFromCompressedData(pMarket, data, fp)) {
+        fclose(fp);
+        return 0;
+    }
+
+    fclose(fp);
+
+    pMarket->customerArr = loadCustomersFromTextFile(customersFileName, &pMarket->customerCount);
+    if (!pMarket->customerArr)
+        return 0;
+
+    return 1;
 }
 
 int	saveCustomersToTextFile(const Customer* customerArr, int customerCount, const char* customersFileName)

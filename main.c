@@ -11,9 +11,23 @@ int main()
 {
 	SuperMarket	market;
 
-	srand((unsigned int)time(NULL));
+    //DELETE LATER
+    setbuf(stdout, 0);
 
-	if (!initSuperMarket(&market, SUPER_FILE_NAME, CUSTOMER_FILE_NAME))
+
+    srand((unsigned int)time(NULL));
+
+    int compressed;
+
+    do
+    {
+        printf("Do you want to work with a compressed file? 1: yes, 0: no\n");
+        scanf("%d", &compressed);
+    } while(compressed != 0 && compressed != 1);
+
+    char* superFileName = compressed ? COMPRESSED_SUPER_FILE_NAME : SUPER_FILE_NAME;
+
+	if (!initSuperMarket(&market, superFileName, compressed, CUSTOMER_FILE_NAME))
 	{
 		printf("error init Super Market");
 		return 0;
@@ -80,7 +94,8 @@ int main()
 
 	handleCustomerStillShoppingAtExit(&market);
 
-	if (!saveSuperMarketToFile(&market, SUPER_FILE_NAME, CUSTOMER_FILE_NAME))
+	if (compressed ? !saveSuperMarketToCompressedFile(&market, superFileName, CUSTOMER_FILE_NAME) :
+                    !saveSuperMarketToFile(&market, superFileName, CUSTOMER_FILE_NAME))
 		printf("Error saving supermarket to file\n");
 
 	freeMarket(&market);

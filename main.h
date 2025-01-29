@@ -1,7 +1,8 @@
 #pragma once
 
 #define EXIT -1
-#define SUPER_FILE_NAME "SuperMarket.bin"
+#define SUPER_FILE_NAME "super.bin"
+#define COMPRESSED_SUPER_FILE_NAME "super_compress.bin"
 #define CUSTOMER_FILE_NAME "Customers.txt"
 
 typedef enum
