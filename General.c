@@ -2,7 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdarg.h>
 #include "General.h"
+
+#include "myMacros.h"
 
 char* getStrExactLength(const char* msg)
 {
@@ -20,9 +23,7 @@ char* getDynStr(char* str)
 
 	theStr = strdup(str);
 
-	if (!theStr)
-		return NULL;
-
+	CHECK_RETURN_0(theStr);
 	return theStr;
 }
 
@@ -41,8 +42,7 @@ char* myGets(char* buffer, int size, FILE* source)
 		do
 		{
 			ok = fgets(buffer, size, source);
-			if (!ok)
-				return NULL;
+			CHECK_RETURN_0(ok);
 			while (len = strlen(buffer))
 			{
 				if (iscntrl(buffer[len - 1]))
@@ -69,9 +69,7 @@ char** splitCharsToWords(char* str, int* pCount, const char* del, size_t* pTotal
 	{
 		wordsArray = (char**)safeRealloc(wordsArray, (count + 1) * sizeof(char*));
 
-		if(!wordsArray)
-			return 0;
-
+		CHECK_RETURN_0(wordsArray);
 		wordsArray[count] = getDynStr(word);
 		count++;
 		*pTotalLength += (int)strlen(word);
@@ -180,4 +178,36 @@ void generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* e
 	for (int i = 0; i < size; i++)
 		func((char*)(arr)+i * typeSize);
 
+}
+
+void printMessage(const char* str,...) {
+	va_list list;
+	char* longStr = NULL;
+	int combineLength=0;
+
+	va_start(list, str);
+	const char *strTemp = str;
+	while (strTemp != NULL)
+	{
+		const int len = strlen(strTemp)+1;
+		longStr = (char*)safeRealloc(longStr, (combineLength +len+1 ) * sizeof(char));
+		if (!longStr)
+			return;
+
+		if (combineLength == 0)
+		{
+			strcpy(longStr, strTemp);
+			combineLength = len;
+		}
+		else {
+			strcat(longStr, " ");
+			strcat(longStr, strTemp);
+			combineLength += len;
+		}
+
+		strTemp = va_arg(list, const char*);
+	}
+
+	va_end(list);
+	printf(longStr);
 }

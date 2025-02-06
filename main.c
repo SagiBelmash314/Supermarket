@@ -11,11 +11,7 @@ int main()
 {
 	SuperMarket	market;
 
-    //DELETE LATER
-    setbuf(stdout, 0);
-
-
-    srand((unsigned int)time(NULL));
+    srand(time(NULL));
 
     int compressed;
 
@@ -25,7 +21,7 @@ int main()
         scanf("%d", &compressed);
     } while(compressed != 0 && compressed != 1);
 
-    char* superFileName = compressed ? COMPRESSED_SUPER_FILE_NAME : SUPER_FILE_NAME;
+    const char* superFileName = compressed ? COMPRESSED_SUPER_FILE_NAME : SUPER_FILE_NAME;
 
 	if (!initSuperMarket(&market, superFileName, compressed, CUSTOMER_FILE_NAME))
 	{
@@ -33,12 +29,11 @@ int main()
 		return 0;
 	}
 
-	int option;
 	int stop = 0;
 	
 	do
 	{
-		option = menu();
+		int option = menu();
 		switch (option)
 		{
 		case eShowSuperMarket:
@@ -82,7 +77,7 @@ int main()
 			break;
 
 		case EXIT:
-			printf("Bye bye\n");
+			printMessage("Thank", "You", "For", "Shopping", "With", "Us", NULL);
 			stop = 1;
 			break;
 

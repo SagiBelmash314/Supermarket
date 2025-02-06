@@ -8,7 +8,7 @@ typedef unsigned char BYTE;
 
 int		    saveSuperMarketToFile(const SuperMarket* pMarket, const char* fileName,
 	                                const char* customersFileName);
-int	        saveSuperMarketToCompressedFile(SuperMarket* pMarket, const char* fileName,
+int	        saveSuperMarketToCompressedFile(const SuperMarket* pMarket, const char* fileName,
                                     const char* customersFileName);
 int		    loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName,
 	                                const char* customersFileName);

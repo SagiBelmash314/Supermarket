@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "ClubMember.h"
 #include "Customer.h"
+#include "myMacros.h"
 
 
 int initClubMember(Customer* pCust)
@@ -51,8 +52,7 @@ int initMemeberFromFile(Customer* pCust,FILE* fp)
 {
 	initRegFromFile(pCust, fp);
 	ClubMember* pClub = (ClubMember*)calloc(1, sizeof(ClubMember));
-	if (!pClub)
-		return 0;
+	CHECK_RETURN_0(pClub);
 
 	if (fscanf(fp, "%d", &pClub->totalMonths) != 1)
 		return 0;
@@ -93,8 +93,7 @@ float	memberDiscount(const Customer* pCustomer)
 
 	if (totalYears < YEAR_1)
 		return (float)(YEAR_1_DISCOUNT * totalMonths);
-	else if (totalYears >= YEAR_1 && totalYears < YEAR_2)
-		return (float)(BASE_2_DISCOUNT + (YEAR_2_DISCOUNT * totalYears));
-	else
-		return MAX_DISCOUNT;
+	if (totalYears >= YEAR_1 && totalYears < YEAR_2)
+		return (float)(BASE_2_DISCOUNT + YEAR_2_DISCOUNT * totalYears);
+	return MAX_DISCOUNT;
 }

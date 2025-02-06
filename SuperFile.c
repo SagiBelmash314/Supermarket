@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "General.h"
 #include "FileHelper.h"
 #include "SuperFile.h"
+
+#include "myMacros.h"
 #include "Product.h"
 
 
@@ -13,29 +14,23 @@ int	saveSuperMarketToFile(const SuperMarket* pMarket, const char* fileName,
 {
 	FILE* fp;
 	fp = fopen(fileName, "wb");
-	if (!fp) {
-		printf("Error open supermarket file to write\n");
-		return 0;
-	}
+	CHECK_MSG_RETURN_0(fp,"Error open supermarket file to write\n");
 
 	if (!writeStringToFile(pMarket->name, fp, "Error write supermarket name\n"))
 	{
-		fclose(fp);
-		return 0;
+		CLOSE_RETURN_0(fp);
 	}
 
 	if (!writeIntToFile(pMarket->productCount, fp, "Error write product count\n"))
 	{
-		fclose(fp);
-		return 0;
+		CLOSE_RETURN_0(fp);
 	}
 
 	for (int i = 0; i < pMarket->productCount; i++)
 	{
 		if (!saveProductToFile(pMarket->productArr[i], fp))
 		{
-			fclose(fp);
-			return 0;
+		CLOSE_RETURN_0(fp);
 		}
 	}
 
@@ -46,15 +41,11 @@ int	saveSuperMarketToFile(const SuperMarket* pMarket, const char* fileName,
 	return 1;
 }
 
-int	saveSuperMarketToCompressedFile(SuperMarket* pMarket, const char* fileName, const char* customersFileName)
+int	saveSuperMarketToCompressedFile(const SuperMarket* pMarket, const char* fileName, const char* customersFileName)
 {
     FILE* fp;
     fp = fopen(fileName, "wb");
-    if (!fp) {
-        printf("Error open supermarket file to write\n");
-        return 0;
-    }
-
+	CHECK_MSG_RETURN_0(fp,"Error open supermarket file to write\n");
     int len = strlen(pMarket->name);
     BYTE data[2] = { 0 };
     data[0] = pMarket->productCount >> 2;
@@ -69,11 +60,11 @@ int	saveSuperMarketToCompressedFile(SuperMarket* pMarket, const char* fileName, 
     for (int i = 0; i < pMarket->productCount; i++)
         if (!writeProductToCompressedFile(pMarket->productArr[i], fp, "Error write product\n"))
         {
-            fclose(fp);
-            return 0;
+			CLOSE_RETURN_0(fp);
         }
 
     fclose(fp);
+	saveCustomersToTextFile(pMarket->customerArr, pMarket->customerCount, customersFileName);
     return 1;
 }
 
@@ -81,36 +72,22 @@ int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName, const ch
 {
 	FILE* fp;
 	fp = fopen(fileName, "rb");
-	if (!fp)
-	{
-		printf("Error open company file\n");
-		return 0;
-	}
-
-
-
-	else pMarket->name = readStringFromFile(fp, "Error reading supermarket name\n");
+	CHECK_MSG_RETURN_0(fp,"Error opening company file\n");
+	pMarket->name = readStringFromFile(fp, "Error reading supermarket name\n");
 	if (!pMarket->name)
 	{
-		fclose(fp);
-		return 0;
+		CLOSE_RETURN_0(fp);
 	}
 
 	int count;
 
-	if (!readIntFromFile(&count, fp, "Error reading product count\n"))
-	{
-		free(pMarket->name);
-		fclose(fp);
-		return 0;
+	if (!readIntFromFile(&count, fp, "Error reading product count\n")) {
+		FREE_CLOSE_FILE_RETURN_0(pMarket->name,fp);
 	}
 
 	pMarket->productArr = (Product**)malloc(count * sizeof(Product*));
-	if (!pMarket->productArr)
-	{
-		free(pMarket->name);
-		fclose(fp);
-		return 0;
+	if (!pMarket->productArr) {
+		FREE_CLOSE_FILE_RETURN_0(pMarket->name,fp);
 	}
 
 	pMarket->productCount = count;
@@ -118,19 +95,14 @@ int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName, const ch
 	for (int i = 0; i < count; i++)
 	{
 		pMarket->productArr[i] = (Product*)malloc(sizeof(Product));
-		if (!pMarket->productArr[i])
-		{
-			free(pMarket->name);
-			fclose(fp);
-			return 0;
+		if (!pMarket->productArr[i]) {
+			FREE_CLOSE_FILE_RETURN_0(pMarket->name,fp);
 		}
 
 		if (!loadProductFromFile(pMarket->productArr[i], fp))
 		{
 			free(pMarket->productArr[i]);
-			free(pMarket->name);
-			fclose(fp);
-			return 0;
+			FREE_CLOSE_FILE_RETURN_0(pMarket->name,fp);
 		}
 	}
 
@@ -138,9 +110,7 @@ int	loadSuperMarketFromFile(SuperMarket* pMarket, const char* fileName, const ch
 	fclose(fp);
 
 	pMarket->customerArr = loadCustomersFromTextFile(customersFileName, &pMarket->customerCount);
-	if (!pMarket->customerArr)
-		return 0;
-
+	CHECK_RETURN_0(pMarket->customerArr);
 	return	1;
 
 }
@@ -149,45 +119,31 @@ int	loadSuperMarketFromCompressedFile(SuperMarket* pMarket, const char* fileName
 {
     FILE* fp;
     fp = fopen(fileName, "rb");
-    if (!fp)
-    {
-        printf("Error open company file\n");
-        return 0;
-    }
+	CHECK_MSG_RETURN_0(fp,"Error opening company file\n");
 
     BYTE data[2] = { 0 };
 
     if (fread(data, 1, 2, fp) != 2)
     {
-        printf("Error reading supermarket");
-        fclose(fp);
-        return 0;
+        printf("Error reading supermarket\n");
+        CLOSE_RETURN_0(fp);
     }
 
     if (!initSupermarketFromCompressedData(pMarket, data, fp)) {
-        fclose(fp);
-        return 0;
+    	CLOSE_RETURN_0(fp);
     }
 
     fclose(fp);
 
     pMarket->customerArr = loadCustomersFromTextFile(customersFileName, &pMarket->customerCount);
-    if (!pMarket->customerArr)
-        return 0;
-
+	CHECK_RETURN_0(pMarket->customerArr);
     return 1;
 }
 
 int	saveCustomersToTextFile(const Customer* customerArr, int customerCount, const char* customersFileName)
 {
-	FILE* fp;
-
-	fp = fopen(customersFileName, "w");
-	if (!fp) {
-		printf("Error opening customers file to write\n");
-		return 0;
-	}
-
+	FILE *fp = fopen(customersFileName, "w");
+    CHECK_MSG_RETURN_0(fp,"Error opening customers file to write\n");
 	fprintf(fp, "%d\n", customerCount);
 	for (int i = 0; i < customerCount; i++)
 		customerArr[i].vTable.saveToFile(&customerArr[i], fp);
@@ -201,10 +157,7 @@ Customer* loadCustomersFromTextFile(const char* customersFileName, int* pCount)
 	FILE* fp;
 
 	fp = fopen(customersFileName, "r");
-	if (!fp) {
-		printf("Error open customers file to write\n");
-		return NULL;
-	}
+    CHECK_MSG_RETURN_0(fp,"Error opening customers file to write\n");
 
 	Customer* customerArr = NULL;
 	int customerCount;
@@ -214,10 +167,8 @@ Customer* loadCustomersFromTextFile(const char* customersFileName, int* pCount)
 	if (customerCount > 0)
 	{
 		customerArr = (Customer*)calloc(customerCount, sizeof(Customer)); //cart will be NULL!!!
-		if (!customerArr)
-		{
-			fclose(fp);
-			return NULL;
+		if (!customerArr) {
+			CLOSE_RETURN_0(fp);
 		}
 
 		for (int i = 0; i < customerCount; i++)

@@ -20,4 +20,4 @@ int		checkAlphaSpaceStr(const char* str);
 void	toLowerStr(char* str);
 
 void	generalArrayFunction(void* arr, int size, int typeSize, void(*func)(void* element));
-
+void    printMessage(const char* str,...);

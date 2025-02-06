@@ -6,6 +6,7 @@
 #include "FileHelper.h"
 #include "General.h"
 #include "SuperFile.h"
+#include "myMacros.h"
 
 
 int	 writeStringToFile(const char* str, FILE* fp, const char* msg)
@@ -85,11 +86,7 @@ char* readStringFromFile(FILE* fp, const char* msg)
 	if (!readIntFromFile(&length, fp, msg))
 		return NULL;
 	str = (char*)malloc((length) * sizeof(char));
-	if (!str)
-	{
-		puts(msg);
-		return NULL;
-	}
+	CHECK_MSG_RETURN_0(str,msg);
 	if (fread(str, sizeof(char), length, fp) != length)
 	{
 		free(str);
@@ -153,8 +150,7 @@ char* readDynStringFromTextFile(FILE* fp)
 char* readSupermarketNameFromCompressedFile(int len, FILE* fp)
 {
     char* name = (char*)malloc(sizeof(char) * (len + 1));
-    if (!name)
-        return NULL;
+    CHECK_RETURN_0(name);
 
     if (fread(name, sizeof(char), len, fp) != len)
     {
@@ -194,19 +190,14 @@ int  initSupermarketFromCompressedData(SuperMarket* pMarket, BYTE* data, FILE* f
     int len = data[1] & 0x3F;
 
     pMarket->name = readSupermarketNameFromCompressedFile(len, fp);
-    if (!pMarket->name)
-    {
-        fclose(fp);
-        return 0;
+    if (!pMarket->name) {
+		CLOSE_RETURN_0(fp);
     }
-
     pMarket->productArr = createProductArrFromCompressedFile(pMarket->productCount, fp);
-    if (!pMarket->productArr)
-    {
-        free(pMarket->name);
-        fclose(fp);
-        return 0;
+    if (!pMarket->productArr){
+    	FREE_CLOSE_FILE_RETURN_0(pMarket->name,fp);
     }
+	return 1;
 }
 
 void initProductFromCompressedData(Product * pP, BYTE* data)
@@ -231,8 +222,7 @@ void initProductFromCompressedData(Product * pP, BYTE* data)
 Product** createProductArrFromCompressedFile(int size, FILE* fp)
 {
     Product** arr = (Product**)malloc(sizeof(Product*) * size);
-    if (!arr)
-        return NULL;
+	CHECK_RETURN_0(arr);
 
     for (int i = 0; i < size; i++)
     {

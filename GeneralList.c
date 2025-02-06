@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include "GeneralList.h"
 
+#include "myMacros.h"
+
 
 //////////////////////////////////////////
 // Init
@@ -35,8 +37,7 @@ NODE* L_insert(NODE* pNode, DATA Value)
 {
 	NODE* tmp;
 
-	if (!pNode)
-		return NULL;
+	CHECK_RETURN_0(pNode);
 
 	tmp = (NODE*)malloc(sizeof(NODE));	// new node
 
@@ -58,11 +59,9 @@ NODE* L_insert(NODE* pNode, DATA Value)
 BOOL L_delete(NODE* pNode, void freeFunc(void*))
 {
 	NODE* tmp;
-	if (!pNode)
-		return False;
+	CHECK_RETURN_0(pNode);
 	tmp = pNode->next;
-	if (!tmp)
-		return False;
+	CHECK_RETURN_0(tmp);
 
 	pNode->next = tmp->next;
 	if (freeFunc != NULL)
@@ -104,8 +103,7 @@ BOOL L_free(LIST* pList, void freeFunc(void*))
 {
 	NODE* tmp;
 	BOOL cont = True;
-	if (!pList)
-		return False;
+	CHECK_RETURN_0(pList);
 
 	tmp = &(pList->head);
 	while (cont)
@@ -126,8 +124,7 @@ int L_print(const LIST* pList, void(*print)(const void*))
 	NODE* tmp;
 	int		c = 0;
 
-	if (!pList)
-		return False;
+	CHECK_RETURN_0(pList);
 
 	printf("\n");
 	tmp = pList->head.next;

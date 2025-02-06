@@ -9,6 +9,7 @@
 #include "General.h"
 #include "ShoppingCart.h"
 #include "FileHelper.h"
+#include "myMacros.h"
 #include "SuperFile.h"
 
 static const char* sortOptStr[eNofSortOpt] = { "None", "Name", "Count", "Price" };
@@ -23,9 +24,6 @@ int initSuperMarket(SuperMarket* pMarket, const char* fileName, const int compre
 	pMarket->productArr = NULL;
 	pMarket->sortOpt = eNone;
 
-
-
-
 	if (compressed ? loadSuperMarketFromCompressedFile(pMarket, fileName, customersFileName) :
                     loadSuperMarketFromFile(pMarket, fileName, customersFileName))
 	{
@@ -35,8 +33,7 @@ int initSuperMarket(SuperMarket* pMarket, const char* fileName, const int compre
 
 	pMarket->name = getStrExactLength("Enter market name");
 
-	if (!pMarket->name)
-		return 0;
+	CHECK_RETURN_0(!pMarket->name);
 	return 1;
 }
 
@@ -178,14 +175,12 @@ int addCustomer(SuperMarket* pMarket)
 int	doShopping(SuperMarket* pMarket)
 {
 	Customer* pCustomer = getCustomerShopPay(pMarket);
-	if (!pCustomer)
-		return 0;
+	CHECK_RETURN_0(pCustomer);
 
 	if (pCustomer->pCart == NULL)
 	{
 		pCustomer->pCart = (ShoppingCart*)malloc(sizeof(ShoppingCart));
-		if (!pCustomer->pCart)
-			return 0;
+		CHECK_RETURN_0(pCustomer->pCart);
 		initCart(pCustomer->pCart);
 	}
 
@@ -205,8 +200,7 @@ int	doShopping(SuperMarket* pMarket)
 Customer*	doPrintCart(SuperMarket* pMarket)
 {
 	Customer* pCustomer = getCustomerShopPay(pMarket);
-	if (!pCustomer)
-		return NULL;
+	CHECK_RETURN_0(pCustomer);
 	if (pCustomer->pCart == NULL)
 	{
 		printf("Customer cart is empty\n");
@@ -222,8 +216,7 @@ int	manageShoppingCart(SuperMarket* pMarket)
 	Customer* pCustomer = doPrintCart(pMarket);
 	char answer;
 
-	if(!pCustomer)
-		return 0;
+	CHECK_RETURN_0(pCustomer);
 
 	printf("Do you want to pay for the cart? y/Y, anything else to cancel shopping!\t");
 	do {
@@ -257,11 +250,7 @@ Customer* getCustomerShopPay(SuperMarket* pMarket)
 	}
 
 	Customer* pCustomer = getCustomerWhoShop(pMarket);
-	if (!pCustomer)
-	{
-		printf("this customer is not listed\n");
-		return NULL;
-	}
+	CHECK_MSG_RETURN_0(pCustomer,"this customer is not listed\n");
 
 	return pCustomer;
 }
@@ -270,7 +259,7 @@ void printAllProducts(const SuperMarket* pMarket)
 {
 	printf("There are %d products\n", pMarket->productCount);
 	printf("%-20s %-10s\t", "Name", "Barcode");
-	printf("%-20s %-10s %-20s %-15s\n", "Type", "Price", "Count In Stoke", "Expiry Date");
+	printf("%-20s %-10s %-20s %-15s\n", "Type", "Price", "Count In Store", "Expiry Date");
 	printf("-------------------------------------------------------------------------------------------------\n");
 	
 	generalArrayFunction(pMarket->productArr, pMarket->productCount, sizeof(Product**), printProductPtr);
@@ -352,11 +341,7 @@ Product* getProductAndCount(SuperMarket* pMarket, int* pCount)
 	char barcode[BARCODE_LENGTH + 1];
 	Product* pProd = getProductFromUser(pMarket, barcode);
 
-	if (pProd == NULL)
-	{
-		printf("No such product\n");
-		return NULL;
-	} 
+	CHECK_MSG_RETURN_0(pProd, "Product not found\n");
 	
 	if (pProd->count == 0)
 	{
@@ -404,11 +389,7 @@ Product* getProductFromUser(SuperMarket* pMarket, char* barcode)
 	getBarcodeCode(barcode);
 	Product* pProd = getProductByBarcode(pMarket, barcode);
 
-	if (!pProd)
-	{
-		printf("No such product barcode\n");
-		return NULL;
-	}
+	CHECK_MSG_RETURN_0(pProd,"No such product barcode\n");
 
 	return pProd;
 }

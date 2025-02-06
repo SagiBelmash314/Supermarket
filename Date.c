@@ -4,6 +4,7 @@
 #include "Date.h"
 #include "General.h"
 #include "FileHelper.h"
+#include "myMacros.h"
 
 int initDate(Date* pDate)
 {
@@ -56,8 +57,7 @@ void printDate(const Date* pDate)
 char* getDateStr(const Date* pDate)
 {
 	char* str = (char*)malloc(MAX_DATE_STR_LEN * sizeof(char));
-	if (!str)
-		return NULL;
+	CHECK_RETURN_0(str);
 	sprintf(str, "%02d/%02d/%04d", pDate->day, pDate->month, pDate->year);
 	return str;
 }

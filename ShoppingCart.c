@@ -4,6 +4,14 @@
 #include "ShoppingCart.h"
 #include "General.h"
 
+#define DETAIL_PRINT
+
+#ifdef DETAIL_PRINT
+	#define PRINT(str,price) printf("%s", price);
+#else
+	#define PRINT(str,price);
+#endif
+
 void initCart(ShoppingCart* pCart)
 {
 	if (pCart == NULL)
@@ -37,7 +45,7 @@ int addItemToCart(ShoppingCart* pCart, const char* barcode, float price, int cou
 
 		return insertNewShoppingItemToList(&pCart->shoppingItems, pItem);
 	}
-	else //item already in cart
+	//else item already in cart
 	{
 		pItem->count += count;
 		return 1;
@@ -84,7 +92,7 @@ float printShoppingCart(const ShoppingCart* pCart)
 
 	L_print(&pCart->shoppingItems, printItem);
 
-	/*printf("Total bill to pay: %.2f\n", price);*/
+	PRINT("Total bill to pay: %.2f\n", price);
 
 	return price;
 }

@@ -4,6 +4,8 @@
 
 #include  "ShoppingItem.h"
 
+#include "myMacros.h"
+
 
 void printItem(const void* var)
 {
@@ -14,8 +16,7 @@ void printItem(const void* var)
 ShoppingItem* createItem(const char* barcode, float price, int count)
 {
 	ShoppingItem* pItem = (ShoppingItem*)malloc(1 * sizeof(ShoppingItem));
-	if (!pItem)
-		return NULL;
+	CHECK_RETURN_0(pItem);
 
 	strcpy(pItem->barcode, barcode);
 	pItem->price = price;

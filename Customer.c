@@ -6,6 +6,7 @@
 #include "General.h"
 #include "ClubMember.h"
 #include "FileHelper.h"
+#include "myMacros.h"
 
 
 int	initCustomer(Customer* pCustomer)
@@ -32,8 +33,7 @@ int	initCustomerNoId(Customer* pCustomer)
 	}
 
 	char* combineName = combineFirstLast(parts);
-	if (!combineName)
-		return 0;
+	CHECK_RETURN_0(combineName);
 
 	pCustomer->name = combineName;
 
@@ -99,8 +99,7 @@ char* combineFirstLast(char** parts)
 	for (int i = 0; i < 2; i++)
 	{
 		pNameParts = splitCharsToWords(parts[i], &count, NAMES_SEP, &totalLength);
-		if (!pNameParts)
-			return NULL;
+		CHECK_RETURN_0(pNameParts);
 
 		for (int j = 0; j < count; j++)
 		{
@@ -213,9 +212,7 @@ void saveCustomerToFile(const Customer* pCust, FILE* fp)
 int loadCustomerFromFile(Customer* pCust, FILE* fp)
 {
 	pCust->name = readDynStringFromTextFile(fp);
-	if (!pCust->name)
-		return 0;
-
+	CHECK_RETURN_0(pCust->name);
 	if (fscanf(fp, "%s", pCust->sId) != 1)
 	{
 		free(pCust->name);
