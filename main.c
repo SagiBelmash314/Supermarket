@@ -33,10 +33,6 @@ int main(int argc, char*  argv[])
 	if (compressed != 0 && compressed != 1)
 		ON_EXIT(WRONG_COMPRESS_INPUT);
 
-
-	if (!compressed && strcmp(superFileName, SUPER_FILE_NAME) || compressed && strcmp(superFileName, COMPRESSED_SUPER_FILE_NAME))
-		ON_EXIT(WRONG_FILE_NAME);
-
 	if (!initSuperMarket(&market, superFileName, compressed, CUSTOMER_FILE_NAME))
 	{
 		printf("Error init Super Market");
@@ -131,5 +127,6 @@ void printUsage()
 {
 	printf("To use this program you need to enter:\n"
 		"1) 0 for regular file, 1 for compressed file\n"
-		"2) The file name of the matched file\n");
+		"2) The file name of the matched file\n"
+		"\nDO NOT try to use a regular file as a compressed file and vice versa.\n\n");
 }
