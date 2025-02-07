@@ -136,7 +136,6 @@ int	loadSuperMarketFromCompressedFile(SuperMarket* pMarket, const char* fileName
     fclose(fp);
 
     pMarket->customerArr = loadCustomersFromTextFile(customersFileName, &pMarket->customerCount);
-	CHECK_RETURN_0(pMarket->customerArr);
     return 1;
 }
 

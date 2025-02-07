@@ -1,31 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 #include "main.h"
+
+#include <string.h>
+
 #include "General.h"
+#include "myMacros.h"
 #include "Supermarket.h"
 #include "SuperFile.h"
 
-int main()
+int main(int argc, char*  argv[])
 {
 	SuperMarket	market;
 
     srand(time(NULL));
 
     int compressed;
+	char* superFileName[256];
+	int numOfArgs = 0;
 
-    do
-    {
-        printf("Do you want to work with a compressed file? 1: yes, 0: no\n");
-        scanf("%d", &compressed);
-    } while(compressed != 0 && compressed != 1);
+	if (argc != 3)
+		ON_EXIT(NOT_ENOUGH_ARGS);
 
-    const char* superFileName = compressed ? COMPRESSED_SUPER_FILE_NAME : SUPER_FILE_NAME;
+	numOfArgs = sscanf(argv[1], "%d", &compressed) + sscanf(argv[2], "%s", superFileName);
+
+
+
+	if (numOfArgs != 2)
+		ON_EXIT(ARGS_SCAN_FAIL);
+
+	if (compressed != 0 && compressed != 1)
+		ON_EXIT(WRONG_COMPRESS_INPUT);
+
+
+	if (!compressed && strcmp(superFileName, SUPER_FILE_NAME) || compressed && strcmp(superFileName, COMPRESSED_SUPER_FILE_NAME))
+		ON_EXIT(WRONG_FILE_NAME);
 
 	if (!initSuperMarket(&market, superFileName, compressed, CUSTOMER_FILE_NAME))
 	{
-		printf("error init Super Market");
+		printf("Error init Super Market");
 		return 0;
 	}
 
@@ -61,7 +75,7 @@ int main()
 
 		case eCustomerManageShoppingCart:
 			if(!manageShoppingCart(&market))
-				printf("Error in shopping cart managment\n");
+				printf("Error in shopping cart management\n");
 			break;
 
 		case eSortProducts:
@@ -113,3 +127,9 @@ int menu()
 	return option;
 }
 
+void printUsage()
+{
+	printf("To use this program you need to enter:\n"
+		"1) 0 for regular file, 1 for compressed file\n"
+		"2) The file name of the matched file\n");
+}

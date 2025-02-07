@@ -8,7 +8,6 @@
 #include "ClubMember.h"
 #include "General.h"
 #include "ShoppingCart.h"
-#include "FileHelper.h"
 #include "myMacros.h"
 #include "SuperFile.h"
 
@@ -33,7 +32,7 @@ int initSuperMarket(SuperMarket* pMarket, const char* fileName, const int compre
 
 	pMarket->name = getStrExactLength("Enter market name");
 
-	CHECK_RETURN_0(!pMarket->name);
+	CHECK_RETURN_0(pMarket->name);
 	return 1;
 }
 
